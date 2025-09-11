@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background-color:#f4f7f6;color:#333;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;margin:0;padding-top:40px}.container{background-color:#fff;padding:30px 40px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.08);width:100%;max-width:500px;text-align:center;box-sizing:border-box}.admin-container{max-width:900px}h1{color:#2c3e50}.button{background-color:#3498db;color:#fff;padding:12px 20px;border:none;border-radius:8px;cursor:pointer;font-size:16px;font-weight:700;width:100%;transition:background-color .3s ease;text-decoration:none;display:inline-block;box-sizing:border-box}.button:hover{background-color:#2980b9}.table-container{width:100%;overflow-x:auto;margin-top:20px}#attendance-table{width:100%;border-collapse:collapse;margin:20px 0}#attendance-table th,#attendance-table td{border:1px solid #ddd;padding:12px;text-align:left}#attendance-table th{background-color:#34495e;color:#fff}#attendance-table tr:nth-child(even){background-color:#f2f2f2}#attendance-table tr:hover{background-color:#dbe4f0}.status-attended{color:#27ae60;font-weight:700}.status-not-attended{color:#e74c3c;font-weight:700}.nav-links{margin-top:30px;border-top:1px solid #eee;padding-top:20px;display:flex;justify-content:space-around}.nav-links a{text-decoration:none;color:#3498db;font-weight:500}.nav-links a:hover{text-decoration:underline}
+    </style>
+</head>
+<body>
+    <div class="container admin-container">
+        <h1>Admin Dashboard</h1>
+        <p>Attendance is updated automatically every 5 seconds.</p>
+        <a href="/export" class="button" download="attendance_report.xlsx" style="max-width: 300px; margin: 10px auto;">Download Excel Report</a>
+        
+        <div class="table-container">
+            <table id="attendance-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Registration ID</th>
+                        <th>Status</th>
+                        <th>Check-in Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </div>
+
+        <div class="nav-links">
+            <a href="/index.html">Go to Registration</a>
+            <a href="/scanner.html">Go to Scanner</a>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tableBody = document.querySelector('#attendance-table tbody');
+
+            async function fetchAndDisplayData() {
+                try {
+                    const response = await fetch('/attendees');
+                    if (!response.ok) {
+                        console.error('Failed to fetch data');
+                        return;
+                    }
+                    const data = await response.json();
+                    
+                    tableBody.innerHTML = '';
+
+                    if (data.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="5">No registrations yet.</td></tr>';
+                        return;
+                    }
+
+                    data.forEach(attendee => {
+                        const row = document.createElement('tr');
+                        const statusClass = attendee.status === 'Attended' ? 'status-attended' : 'status-not-attended';
+                        row.innerHTML = `
+                            <td>${escapeHtml(attendee.name)}</td>
+                            <td>${escapeHtml(attendee.email)}</td>
+                            <td>${escapeHtml(attendee.registration_id)}</td>
+                            <td class="${statusClass}">${escapeHtml(attendee.status)}</td>
+                            <td>${attendee.timestamp ? escapeHtml(attendee.timestamp) : 'N/A'}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                    tableBody.innerHTML = '<tr><td colspan="5">Failed to load data. Please check the server.</td></tr>';
+                }
+            }
+            
+            function escapeHtml(unsafe) {
+                if (typeof unsafe !== 'string') return unsafe;
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
+            fetchAndDisplayData();
+            setInterval(fetchAndDisplayData, 5000);
+        });
+    </script>
+</body>
+</html>
