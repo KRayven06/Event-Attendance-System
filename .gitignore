@@ -1,0 +1,17 @@
+# Ignore the node_modules folder inside the backend directory
+# This is the most important line to fix your deployment error.
+/backend/node_modules
+
+# Ignore the SQLite database file
+# It's bad practice to save a database to GitHub.
+/backend/database.db
+
+# Ignore environment files, which might contain secret keys
+.env
+
+# Ignore log files
+*.log
+npm-debug.log*
+
+# Ignore OS-specific files
+.DS_Store
