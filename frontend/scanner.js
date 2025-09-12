@@ -1,4 +1,4 @@
-// This is the corrected version without the 'DOMContentLoaded' wrapper.
+// Corrected scanner.js with proper class handling
 
 const resultMessageEl = document.getElementById('result-message');
 let lastScanTime = 0;
@@ -30,13 +30,15 @@ const scannerConfig = {
 let html5QrcodeScanner = new Html5QrcodeScanner(
     "qr-reader", 
     scannerConfig,
-    /* verbose= */ false);
+    /* verbose= */ false
+);
 
 html5QrcodeScanner.render(onScanSuccess, onScanFailure);
 
 async function markAttendance(registration_id) {
     resultMessageEl.textContent = 'Verifying...';
-    resultMessageEl.parentElement.className = 'scan-result';
+    const container = resultMessageEl.parentElement;
+    container.className = ''; // clear previous state
 
     try {
         const response = await fetch('/mark-attendance', {
@@ -48,17 +50,17 @@ async function markAttendance(registration_id) {
 
         if (response.ok) {
             resultMessageEl.textContent = `Welcome, ${result.participant.name}! Attendance marked.`;
-            resultMessageEl.parentElement.classList.add('success');
+            container.classList.add('success');
         } else {
             let errorMessage = `Error: ${result.error}`;
             if (result.participant) {
                 errorMessage += ` (${result.participant.name})`;
             }
             resultMessageEl.textContent = errorMessage;
-            resultMessageEl.parentElement.classList.add('error');
+            container.classList.add('error');
         }
     } catch (error) {
         resultMessageEl.textContent = 'A network error occurred.';
-        resultMessageEl.parentElement.classList.add('error');
+        container.classList.add('error');
     }
 }

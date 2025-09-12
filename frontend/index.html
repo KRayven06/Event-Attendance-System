@@ -27,9 +27,7 @@
         <div id="qr-code-container" class="hidden">
             <h2>Your Registration is Complete!</h2>
             <p>Please save this QR code for check-in.</p>
-            <div id="qrcode">
-                <canvas id="qr-canvas"></canvas>
-            </div>
+            <div id="qrcode"></div>
             <a id="download-qr" download="event-qr-code.png">Download QR Code</a>
             <button onclick="window.location.reload()">Register Another</button>
         </div>
@@ -40,7 +38,8 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <!-- ✅ FIX: Use browser-friendly qrcodejs instead of Node build -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('registration-form');
@@ -50,7 +49,7 @@
             const registrationIdInput = document.getElementById('registration-id');
             const generateIdBtn = document.getElementById('generate-id-btn');
             const downloadLink = document.getElementById('download-qr');
-            const canvas = document.getElementById('qr-canvas');
+            const qrCodeDiv = document.getElementById('qrcode');
 
             const generateId = () => {
                 const timestamp = Date.now().toString(36);
@@ -59,7 +58,7 @@
             };
 
             generateIdBtn.addEventListener('click', generateId);
-            generateId(); // Generate an ID on page load
+            generateId(); // Generate ID on page load
 
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
@@ -83,13 +82,22 @@
                     if (response.ok) {
                         formContainer.classList.add('hidden');
                         qrCodeContainer.classList.remove('hidden');
-                        
-                        // Use the new library to draw a high-quality QR code
-                        QRCode.toCanvas(canvas, registration_id, { width: 200, margin: 2 }, function (error) {
-                            if (error) console.error(error);
-                            // Set download link href after canvas is drawn
-                            downloadLink.href = canvas.toDataURL('image/png');
+
+                        // ✅ FIX: Generate QR with qrcodejs
+                        qrCodeDiv.innerHTML = "";
+                        new QRCode(qrCodeDiv, {
+                            text: registration_id,
+                            width: 200,
+                            height: 200
                         });
+
+                        // ✅ update download link
+                        setTimeout(() => {
+                            const img = qrCodeDiv.querySelector("img");
+                            if (img) {
+                                downloadLink.href = img.src;
+                            }
+                        }, 500);
 
                     } else {
                         messageEl.textContent = 'Error: ' + result.error;
