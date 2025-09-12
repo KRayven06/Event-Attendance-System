@@ -1,4 +1,4 @@
-// Corrected scanner.js with proper class handling
+// Scanner.js (clean version without ugly default UI)
 
 const resultMessageEl = document.getElementById('result-message');
 let lastScanTime = 0;
@@ -17,28 +17,41 @@ function onScanFailure(error) {
     // Ignore scan failures to allow for continuous scanning.
 }
 
-// Configuration with higher resolution video constraints
-const scannerConfig = {
-    fps: 10,
-    qrbox: { width: 250, height: 250 },
-    videoConstraints: {
-        width: { ideal: 1280 },
-        height: { ideal: 720 }
+// --- NEW CUSTOM SCANNER SETUP ---
+let html5Qrcode;
+
+async function startScanner() {
+    html5Qrcode = new Html5Qrcode("qr-reader");
+
+    const config = {
+        fps: 10,
+        qrbox: { width: 300, height: 300 }, // bigger scan area
+        videoConstraints: {
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+        }
+    };
+
+    try {
+        await html5Qrcode.start(
+            { facingMode: "environment" }, // back camera on mobile
+            config,
+            onScanSuccess,
+            onScanFailure
+        );
+        resultMessageEl.textContent = "Please scan a QR code...";
+    } catch (err) {
+        resultMessageEl.textContent = "Camera start failed: " + err;
     }
-};
+}
 
-let html5QrcodeScanner = new Html5QrcodeScanner(
-    "qr-reader", 
-    scannerConfig,
-    /* verbose= */ false
-);
+// Auto start scanner on page load
+startScanner();
 
-html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-
+// --- Attendance Marking Function ---
 async function markAttendance(registration_id) {
     resultMessageEl.textContent = 'Verifying...';
-    const container = resultMessageEl.parentElement;
-    container.className = ''; // clear previous state
+    resultMessageEl.parentElement.className = 'scan-result';
 
     try {
         const response = await fetch('/mark-attendance', {
@@ -50,17 +63,17 @@ async function markAttendance(registration_id) {
 
         if (response.ok) {
             resultMessageEl.textContent = `Welcome, ${result.participant.name}! Attendance marked.`;
-            container.classList.add('success');
+            resultMessageEl.parentElement.classList.add('success');
         } else {
             let errorMessage = `Error: ${result.error}`;
             if (result.participant) {
                 errorMessage += ` (${result.participant.name})`;
             }
             resultMessageEl.textContent = errorMessage;
-            container.classList.add('error');
+            resultMessageEl.parentElement.classList.add('error');
         }
     } catch (error) {
         resultMessageEl.textContent = 'A network error occurred.';
-        container.classList.add('error');
+        resultMessageEl.parentElement.classList.add('error');
     }
 }

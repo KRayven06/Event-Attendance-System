@@ -11,7 +11,7 @@
             color: #f8f9fa;
         }
         .container {
-            max-width: 900px;
+            max-width: 960px;
             margin-top: 50px;
             margin-bottom: 50px;
         }
@@ -23,28 +23,34 @@
             width: 40px;
             height: 40px;
         }
+        .table-responsive {
+            max-height: 60vh;
+        }
         .table {
-            --bs-table-bg: #2c2c2c;
-            --bs-table-striped-bg: #3a3a3a;
-            --bs-table-border-color: #444;
+            background-color: #2c2c2c;
         }
-        .nav-button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            background-color: #3a3a3a;
-            color: #f8f9fa;
-            transition: background-color 0.2s ease-in-out;
+        .table thead {
+            position: sticky;
+            top: 0;
+            z-index: 1;
         }
-        .nav-button:hover {
-            background-color: #4a4a4a;
-            color: #fff;
+        .nav-button { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            text-decoration: none; 
+            padding: 1rem; 
+            border-radius: 0.5rem; 
+            background-color: #3a3a3a; 
+            color: #f8f9fa; 
+            transition: background-color 0.2s ease-in-out; 
         }
-        .nav-button svg {
-            margin-right: 0.75rem;
+        .nav-button:hover { 
+            background-color: #4a4a4a; 
+            color: #fff; 
+        }
+        .nav-button svg { 
+            margin-right: 0.75rem; 
         }
         .status-attended {
             color: #198754;
@@ -53,29 +59,54 @@
         .status-not-attended {
             color: #dc3545;
         }
+        .stat-card {
+            border: 1px solid #444;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="card shadow-lg">
             <div class="card-body p-4 p-md-5">
-
                 <div class="text-center mb-4">
-                    <svg class="logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <path fill="#007bff" d="M50 0L95.1 24.4V75.6L50 100L4.9 75.6V24.4L50 0Z"/>
-                        <path fill="#fff" d="M50 15L82.5 32.7V67.3L50 85L17.5 67.3V32.7L50 15ZM50 22.5L25.9 36.1V63.9L50 77.5L74.1 63.9V36.1L50 22.5Z"/>
-                    </svg>
+                    <svg class="logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="#007bff" d="M50 0L95.1 24.4V75.6L50 100L4.9 75.6V24.4L50 0Z"/><path fill="#fff" d="M50 15L82.5 32.7V67.3L50 85L17.5 67.3V32.7L50 15ZM50 22.5L25.9 36.1V63.9L50 77.5L74.1 63.9V36.1L50 22.5Z"/></svg>
                     <h1 class="h3 fw-bold mt-2 mb-0">Event Registration</h1>
                     <p class="text-body-secondary mt-2">Admin Dashboard</p>
                 </div>
+
+                <div class="row text-center mb-4 g-3">
+                    <div class="col-md-4">
+                        <div class="stat-card bg-primary bg-opacity-25 p-3 rounded">
+                            <h6 class="text-primary text-uppercase small">Total Participants</h6>
+                            <h2 id="total-count" class="fw-bold mb-0">0</h2>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card bg-success bg-opacity-25 p-3 rounded">
+                            <h6 class="text-success text-uppercase small">Present</h6>
+                            <h2 id="present-count" class="fw-bold mb-0">0</h2>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card bg-danger bg-opacity-25 p-3 rounded">
+                            <h6 class="text-danger text-uppercase small">Absent</h6>
+                            <h2 id="absent-count" class="fw-bold mb-0">0</h2>
+                        </div>
+                    </div>
+                </div>
                 
                 <div class="text-center mb-4">
-                    <a href="/export" class="btn btn-success" download="attendance_report.xlsx">Download Excel Report</a>
+                    <a href="http://localhost:3000/export" class="btn btn-success" download="attendance_report.xlsx">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download me-2" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                        </svg>
+                        Download Excel Report
+                    </a>
                 </div>
-                <p class="text-center text-muted small">Attendance data refreshes automatically every 5 seconds.</p>
                 
                 <div class="table-responsive">
-                    <table id="attendance-table" class="table table-striped table-bordered">
+                    <table id="attendance-table" class="table table-dark table-striped table-hover">
                         <thead>
                             <tr>
                                 <th>Name</th>
@@ -83,6 +114,7 @@
                                 <th>Registration ID</th>
                                 <th>Status</th>
                                 <th>Check-in Time</th>
+                                <th class="text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -93,41 +125,39 @@
 
                 <hr class="my-4">
 
-                <div class="row g-3">
-                    <div class="col-6">
-                        <a href="/index.html" class="nav-button">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-                            <span>New Registration</span>
-                        </a>
-                    </div>
-                    <div class="col-6">
-                         <a href="/scanner.html" class="nav-button">
-                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10"/></svg>
-                            <span>Scan QR</span>
-                        </a>
-                    </div>
+                <div class="row g-3 mt-4">
+                    <div class="col-6"><a href="/index.html" class="nav-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg><span>Register</span></a></div>
+                    <div class="col-6"><a href="/scanner.html" class="nav-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg><span>Scanner</span></a></div>
                 </div>
-
             </div>
         </div>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const tableBody = document.querySelector('#attendance-table tbody');
+            const API_BASE_URL = 'http://localhost:3000';
 
             async function fetchAndDisplayData() {
                 try {
-                    const response = await fetch('/attendees');
+                    const response = await fetch(`${API_BASE_URL}/attendees`);
                     if (!response.ok) {
                         console.error('Failed to fetch data');
                         return;
                     }
                     const data = await response.json();
+
+                    // Update stats
+                    const total = data.length;
+                    const present = data.filter(a => a.status === 'Attended').length;
+                    const absent = total - present;
+                    document.getElementById('total-count').textContent = total;
+                    document.getElementById('present-count').textContent = present;
+                    document.getElementById('absent-count').textContent = absent;
                     
                     tableBody.innerHTML = '';
 
                     if (data.length === 0) {
-                        tableBody.innerHTML = '<tr><td colspan="5" class="text-center">No registrations yet.</td></tr>';
+                        tableBody.innerHTML = '<tr><td colspan="6" class="text-center">No registrations yet.</td></tr>';
                         return;
                     }
 
@@ -135,19 +165,24 @@
                         const row = document.createElement('tr');
                         const statusClass = attendee.status === 'Attended' ? 'status-attended' : 'status-not-attended';
                         
+                        const actionCell = attendee.status === 'Attended'
+                            ? `<button class="btn btn-sm btn-outline-success" disabled>Checked In</button>`
+                            : `<button class="btn btn-sm btn-primary checkin-btn" data-id="${escapeHtml(attendee.registration_id)}">Check In</button>`;
+
                         row.innerHTML = `
                             <td>${escapeHtml(attendee.name)}</td>
                             <td>${escapeHtml(attendee.email)}</td>
                             <td>${escapeHtml(attendee.registration_id)}</td>
                             <td class="${statusClass}">${escapeHtml(attendee.status)}</td>
                             <td>${attendee.timestamp ? escapeHtml(attendee.timestamp) : 'N/A'}</td>
+                            <td class="text-center">${actionCell}</td>
                         `;
                         tableBody.appendChild(row);
                     });
 
                 } catch (error) {
                     console.error('Error fetching data:', error);
-                    tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Failed to load data. Please check the server.</td></tr>';
+                    tableBody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Failed to load data. Please check the server.</td></tr>';
                 }
             }
             
@@ -160,6 +195,37 @@
                     .replace(/"/g, "&quot;")
                     .replace(/'/g, "&#039;");
             }
+
+            async function handleManualCheckin(registrationId) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/mark-attendance`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ registration_id: registrationId }),
+                    });
+                    
+                    if (!response.ok) {
+                        const result = await response.json();
+                        alert(`Error: ${result.error}`);
+                    }
+                    
+                    fetchAndDisplayData();
+
+                } catch (error) {
+                    console.error('Manual check-in error:', error);
+                    alert('A network error occurred during check-in.');
+                    fetchAndDisplayData();
+                }
+            }
+
+            tableBody.addEventListener('click', function(e) {
+                if (e.target && e.target.classList.contains('checkin-btn')) {
+                    const registrationId = e.target.dataset.id;
+                    e.target.disabled = true;
+                    e.target.textContent = '...';
+                    handleManualCheckin(registrationId);
+                }
+            });
 
             fetchAndDisplayData();
             setInterval(fetchAndDisplayData, 5000);

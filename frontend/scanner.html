@@ -11,7 +11,7 @@
             color: #f8f9fa;
         }
         .container {
-            max-width: 500px;
+            max-width: 480px; /* Slightly smaller for differentiation */
             margin-top: 50px;
             margin-bottom: 50px;
         }
@@ -23,48 +23,118 @@
             width: 40px;
             height: 40px;
         }
-        #qr-reader {
-            border-radius: 8px;
+        
+        /* --- Stylish Scanner --- */
+        #scanner-container {
+            position: relative;
+            width: 100%;
+            padding-top: 75%; /* Aspect ratio 4:3 */
             overflow: hidden;
-            border: 1px solid #444;
-        }
-        #scan-result {
-            text-align: center;
-        }
-        .alert-base {
-            padding: 1rem;
-            margin-top: 1rem;
-            border: 1px solid transparent;
-            border-radius: .5rem;
-            font-weight: 500;
-        }
-        .success {
-            color: #75b798;
-            background-color: #1c3c2f;
-            border-color: #2a5a46;
-        }
-        .error {
-            color: #ea868f;
-            background-color: #422024;
-            border-color: #633036;
-        }
-        .nav-button {
+            border-radius: 8px;
+            background-color: #111;
             display: flex;
             align-items: center;
             justify-content: center;
-            text-decoration: none;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            background-color: #3a3a3a;
-            color: #f8f9fa;
-            transition: background-color 0.2s ease-in-out;
         }
-        .nav-button:hover {
-            background-color: #4a4a4a;
-            color: #fff;
+        #qr-reader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
         }
-        .nav-button svg {
-            margin-right: 0.75rem;
+        #qr-reader > div:first-child {
+            border: none !important;
+        }
+
+        /* --- Redesigned Placeholder --- */
+        #scanner-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #212529;
+            z-index: 10;
+            transition: opacity 0.3s ease;
+        }
+        #scanner-placeholder.hidden {
+            display: none;
+        }
+        #scanner-placeholder svg {
+            color: #6c757d;
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1.5rem;
+        }
+        /* --- End Redesigned Placeholder --- */
+
+        .scanner-frame {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .scanner-frame__corner {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 4px solid #007bff;
+            animation: pulse-default 2s infinite;
+            transition: border-color 0.5s ease;
+        }
+        .scanner-frame__corner--tl { top: -2px; left: -2px; border-right: none; border-bottom: none; border-top-left-radius: 8px; }
+        .scanner-frame__corner--tr { top: -2px; right: -2px; border-left: none; border-bottom: none; border-top-right-radius: 8px; }
+        .scanner-frame__corner--bl { bottom: -2px; left: -2px; border-right: none; border-top: none; border-bottom-left-radius: 8px; }
+        .scanner-frame__corner--br { bottom: -2px; right: -2px; border-left: none; border-top: none; border-bottom-right-radius: 8px; }
+
+        .scanning-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #007bff, transparent);
+            box-shadow: 0 0 10px #007bff;
+            animation: scan 3s infinite ease-in-out;
+            transition: background 0.5s ease, box-shadow 0.5s ease;
+            display: none; /* Initially hidden */
+        }
+        .scanner-frame.active .scanning-line {
+            display: block;
+        }
+
+        .scanner-frame.success .scanner-frame__corner { border-color: #198754; animation-name: pulse-success; }
+        .scanner-frame.success .scanning-line { background: linear-gradient(90deg, transparent, #198754, transparent); box-shadow: 0 0 10px #198754; }
+        .scanner-frame.error .scanner-frame__corner { border-color: #dc3545; animation-name: pulse-error; }
+        .scanner-frame.error .scanning-line { background: linear-gradient(90deg, transparent, #dc3545, transparent); box-shadow: 0 0 10px #dc3545; }
+
+        @keyframes scan { 0% { transform: translateY(0); } 50% { transform: translateY(calc(100% - 3px)); } 100% { transform: translateY(0); } }
+        @keyframes pulse-default { 0% { border-color: #007bff; } 50% { border-color: #00bfff; } 100% { border-color: #007bff; } }
+        @keyframes pulse-success { 0% { border-color: #198754; } 50% { border-color: #20c997; } 100% { border-color: #198754; } }
+        @keyframes pulse-error { 0% { border-color: #dc3545; } 50% { border-color: #ff7b88; } 100% { border-color: #dc3545; } }
+        
+        #scan-result { text-align: center; }
+        .alert-base { padding: 1rem; margin-top: 1rem; border: 1px solid transparent; border-radius: .5rem; font-weight: 500; }
+        .success { color: #75b798; background-color: #1c3c2f; border-color: #2a5a46; }
+        .error { color: #ea868f; background-color: #422024; border-color: #633036; }
+        
+        .nav-button { display: flex; align-items: center; justify-content: center; text-decoration: none; padding: 1rem; border-radius: 0.5rem; background-color: #3a3a3a; color: #f8f9fa; transition: background-color 0.2s ease-in-out; }
+        .nav-button:hover { background-color: #4a4a4a; color: #fff; }
+        .nav-button svg { margin-right: 0.75rem; }
+
+        .file-scan-btn {
+            display: inline-flex;
+            align-items: center;
+        }
+        .file-scan-btn svg {
+            margin-right: 0.5rem;
         }
     </style>
 </head>
@@ -73,40 +143,143 @@
         <div class="card shadow-lg">
             <div class="card-body p-4 p-md-5">
                 <div class="text-center mb-4">
-                    <svg class="logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                        <path fill="#007bff" d="M50 0L95.1 24.4V75.6L50 100L4.9 75.6V24.4L50 0Z"/>
-                        <path fill="#fff" d="M50 15L82.5 32.7V67.3L50 85L17.5 67.3V32.7L50 15ZM50 22.5L25.9 36.1V63.9L50 77.5L74.1 63.9V36.1L50 22.5Z"/>
-                    </svg>
+                    <svg class="logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="#007bff" d="M50 0L95.1 24.4V75.6L50 100L4.9 75.6V24.4L50 0Z"/><path fill="#fff" d="M50 15L82.5 32.7V67.3L50 85L17.5 67.3V32.7L50 15ZM50 22.5L25.9 36.1V63.9L50 77.5L74.1 63.9V36.1L50 22.5Z"/></svg>
                     <h1 class="h3 fw-bold mt-2 mb-0">Event Registration</h1>
                     <p class="text-body-secondary mt-2">QR Code Scanner</p>
                 </div>
 
-                <div id="qr-reader"></div>
-                <div id="scan-result">
-                    <p id="result-message" class="alert-base">Please scan a QR code...</p>
+                <div id="scanner-container">
+                    <div id="scanner-placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                        <button id="start-scan-btn" class="btn btn-primary">Start Scanning</button>
+                    </div>
+                    <div id="qr-reader"></div>
+                    <div class="scanner-frame">
+                        <div class="scanner-frame__corner scanner-frame__corner--tl"></div>
+                        <div class="scanner-frame__corner scanner-frame__corner--tr"></div>
+                        <div class="scanner-frame__corner scanner-frame__corner--bl"></div>
+                        <div class="scanner-frame__corner scanner-frame__corner--br"></div>
+                        <div class="scanning-line"></div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-3">
+                     <button id="scan-file-btn" class="btn btn-outline-secondary btn-sm file-scan-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                        Scan from File
+                    </button>
+                    <input type="file" id="qr-file-input" accept="image/*" class="d-none">
                 </div>
                 
+                <div id="scan-result">
+                    <p id="result-message" class="alert-base">Click "Start Scanning" to activate the camera.</p>
+                </div>
+
                 <hr class="my-4">
 
-                <div class="row g-3">
-                    <div class="col-6">
-                        <a href="/index.html" class="nav-button">
-                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-                            <span>Register</span>
-                        </a>
-                    </div>
-                    <div class="col-6">
-                         <a href="/admin.html" class="nav-button">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                            <span>Admin Panel</span>
-                        </a>
-                    </div>
+                <div class="row g-3 mt-4">
+                    <div class="col-6"><a href="/index.html" class="nav-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg><span>Register</span></a></div>
+                    <div class="col-6"><a href="/admin.html" class="nav-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span>Admin Panel</span></a></div>
                 </div>
             </div>
         </div>
     </div>
     
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-    <script src="scanner.js" defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const resultMessageEl = document.getElementById('result-message');
+            const scannerFrame = document.querySelector('.scanner-frame');
+            const scanFileBtn = document.getElementById('scan-file-btn');
+            const fileInput = document.getElementById('qr-file-input');
+            const startScanBtn = document.getElementById('start-scan-btn');
+            const scannerPlaceholder = document.getElementById('scanner-placeholder');
+
+            let lastScanTime = 0;
+            const scanCooldown = 3000;
+            let html5QrcodeScanner;
+
+            function onScanSuccess(decodedText, decodedResult) {
+                const currentTime = Date.now();
+                if (currentTime - lastScanTime < scanCooldown) return;
+                lastScanTime = currentTime;
+                markAttendance(decodedText);
+            }
+
+            function onScanFailure(error) { /* Continuous scanning */ }
+            
+            function resetScannerState() {
+                resultMessageEl.innerHTML = 'Please scan a QR code...';
+                resultMessageEl.className = 'alert-base';
+                scannerFrame.className = 'scanner-frame active';
+                lastScanTime = 0; // Reset cooldown to allow immediate rescan
+            }
+
+            function displayScanError(message) {
+                resultMessageEl.innerHTML = `${message}<br><button id="scan-again-btn" class="btn btn-light btn-sm mt-2">Scan Again</button>`;
+                resultMessageEl.className = 'alert-base error';
+                scannerFrame.className = 'scanner-frame active error';
+                document.getElementById('scan-again-btn').addEventListener('click', resetScannerState);
+            }
+
+            startScanBtn.addEventListener('click', () => {
+                scannerPlaceholder.classList.add('hidden');
+                scannerFrame.classList.add('active');
+                resultMessageEl.textContent = "Please scan a QR code...";
+
+                const config = { 
+                    fps: 10, 
+                    qrbox: { width: 250, height: 250 },
+                };
+                html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", config, false);
+                html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+            });
+
+            scanFileBtn.addEventListener('click', () => fileInput.click());
+
+            fileInput.addEventListener('change', e => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                resultMessageEl.textContent = 'Scanning image...';
+                
+                const fileScanner = new Html5Qrcode("qr-reader", { verbose: false });
+                fileScanner.scanFile(file, true)
+                    .then(decodedText => {
+                        markAttendance(decodedText);
+                    })
+                    .catch(err => {
+                        displayScanError('Error: No QR code found in image.');
+                    });
+            });
+
+            async function markAttendance(registration_id) {
+                resultMessageEl.textContent = 'Verifying...';
+                resultMessageEl.className = 'alert-base';
+                scannerFrame.className = 'scanner-frame active';
+
+                try {
+                    const response = await fetch('/mark-attendance', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ registration_id }),
+                    });
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        resultMessageEl.textContent = `Welcome, ${result.participant.name}! Attendance marked.`;
+                        resultMessageEl.classList.add('success');
+                        scannerFrame.classList.add('success');
+                    } else {
+                        let errorMessage = `Error: ${result.error}`;
+                        if (result.participant) errorMessage += ` (${result.participant.name})`;
+                        displayScanError(errorMessage);
+                    }
+                } catch (error) {
+                    displayScanError('A network error occurred.');
+                }
+            }
+        });
+    </script>
 </body>
 </html>
