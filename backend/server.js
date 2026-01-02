@@ -10,12 +10,12 @@ const port = process.env.PORT || 3000;
 let db;
 
 // --- Smart Database Connection ---
-if (process.env.DATABASE_URL) {
-    // ---- PostgreSQL (for Hosting on Render) ----
+if (process.env.DATABASE_URL || process.env.POSTGRES_URL) {
+    // ---- PostgreSQL (for Hosting on Render / Vercel) ----
     console.log("Running in production mode. Connecting to PostgreSQL...");
     const { Pool } = require('pg');
     db = new Pool({
-        connectionString: process.env.DATABASE_URL,
+        connectionString: process.env.DATABASE_URL || process.env.POSTGRES_URL,
         ssl: { rejectUnauthorized: false }
     });
     
@@ -75,7 +75,7 @@ app.post('/register', async (req, res) => {
     }
     
     try {
-        if (process.env.DATABASE_URL) { // PostgreSQL
+        if (process.env.DATABASE_URL || process.env.POSTGRES_URL) { // PostgreSQL
             const sql = `INSERT INTO registrations (name, email, registration_id) VALUES ($1, $2, $3) RETURNING id`;
             const result = await db.query(sql, [name, email, registration_id]);
             res.status(201).json({ message: 'Registration successful!', id: result.rows[0].id });
@@ -100,7 +100,7 @@ app.post('/mark-attendance', async (req, res) => {
     }
     
     try {
-        if (process.env.DATABASE_URL) { // PostgreSQL
+        if (process.env.DATABASE_URL || process.env.POSTGRES_URL) { // PostgreSQL
             const findSql = `SELECT * FROM registrations WHERE registration_id = $1`;
             const findResult = await db.query(findSql, [registration_id]);
             if (findResult.rows.length === 0) return res.status(404).json({ error: 'Participant not found.' });
@@ -141,7 +141,7 @@ app.post('/mark-attendance', async (req, res) => {
 // 3. Get all attendees
 app.get('/attendees', async (req, res) => {
     try {
-        if (process.env.DATABASE_URL) { // PostgreSQL
+        if (process.env.DATABASE_URL || process.env.POSTGRES_URL) { // PostgreSQL
             const sql = `SELECT name, email, registration_id, status, TO_CHAR(timestamp, 'YYYY-MM-DD HH24:MI:SS') as timestamp FROM registrations ORDER BY id DESC`;
             const result = await db.query(sql);
             res.json(result.rows);
@@ -163,7 +163,7 @@ app.get('/attendees', async (req, res) => {
 app.get('/export', async (req, res) => {
     try {
         let rows;
-        if (process.env.DATABASE_URL) { // PostgreSQL
+        if (process.env.DATABASE_URL || process.env.POSTGRES_URL) { // PostgreSQL
              const sql = `SELECT name AS "Name", email AS "Email", registration_id AS "Registration ID", status AS "Status", TO_CHAR(timestamp, 'YYYY-MM-DD HH24:MI:SS') AS "Check-in Time" FROM registrations`;
              const result = await db.query(sql);
              rows = result.rows;
@@ -199,6 +199,10 @@ app.get('*', (req, res) => {
 });
 
 
-app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
-});
+if (require.main === module) {
+    app.listen(port, () => {
+        console.log(`Server listening on port ${port}`);
+    });
+}
+
+module.exports = app;
